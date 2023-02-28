@@ -25,13 +25,12 @@ CREATE TABLE member IF NOT EXISTS (
     memberid INT NOT NULL,
     playerid VARCHAR(30) NOT NULL,
     matchid INT NOT NULL,
-    score DECIMAL(5,2) NOT NULL,
+    --score DECIMAL(5,2) NOT NULL, !!!NOT SURE IF NECESSARY!!!
     PRIMARY KEY (memberid),
     FOREIGN KEY (playerid) REFERENCES player(username),
     FOREIGN KEY (matchid) REFERENCES game(gameid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Table for storing the information about the results of a game
 -- Table for storing the information about the results of a game
 CREATE TABLE result IF NOT EXISTS (
     resultid INT NOT NULL,
@@ -39,7 +38,6 @@ CREATE TABLE result IF NOT EXISTS (
     PRIMARY KEY (resultid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Table for storing the information about the cards in the game
 -- Table for storing the information about the cards in the game
 CREATE TABLE card IF NOT EXISTS (
     cardid INT NOT NULL,
@@ -49,7 +47,6 @@ CREATE TABLE card IF NOT EXISTS (
     FOREIGN KEY (card_type) REFERENCES energy(energy_type)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Table for storing the information about the energy types in the game
 -- Table for storing the information about the energy types in the game
 CREATE TABLE energy IF NOT EXISTS (
     energyid INT NOT NULL,
@@ -68,7 +65,7 @@ CREATE TABLE minion IF NOT EXISTS (
     PRIMARY KEY (minionid),
     FOREIGN KEY (card_type) REFERENCES card(card_type),
     FOREIGN KEY (energy_type) REFERENCES energy(energy_type)
-)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Table for storing the information about the invocation cards in the game
 CREATE TABLE spell IF NOT EXISTS (
@@ -80,7 +77,7 @@ CREATE TABLE spell IF NOT EXISTS (
     PRIMARY KEY (spellid),
     FOREIGN KEY (card_type) REFERENCES card(card_type),
     FOREIGN KEY (energy_type) REFERENCES energy(energy_type)
-)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Table for storing the information about the terrain cards in the game
 CREATE TABLE terrain IF NOT EXISTS (
@@ -95,60 +92,11 @@ CREATE TABLE terrain IF NOT EXISTS (
 -- Table for storing the information about the cards in a player's hand
 CREATE TABLE card_in_hand IF NOT EXISTS (
     card_in_handid INT NOT NULL,
--- Table for storing the information about the minion cards in the game
-CREATE TABLE minion IF NOT EXISTS (
-    minionid INT NOT NULL,
-    card_type VARCHAR(32),
-    energy_type VARCHAR(32),
-    summon_cost SMALLINT,
-    start_power SMALLINT,
-    atk_cost SMALLINT,
-    PRIMARY KEY (minionid),
-    FOREIGN KEY (card_type) REFERENCES card(card_type),
-    FOREIGN KEY (energy_type) REFERENCES energy(energy_type)
-)
-
--- Table for storing the information about the invocation cards in the game
-CREATE TABLE spell IF NOT EXISTS (
-    spellid INT NOT NULL,
-    card_type VARCHAR(32),
-    energy_type VARCHAR(32),
-    fast_cost SMALLINT,
-    slow_time SMALLINT,
-    PRIMARY KEY (spellid),
-    FOREIGN KEY (card_type) REFERENCES card(card_type),
-    FOREIGN KEY (energy_type) REFERENCES energy(energy_type)
-)
-
--- Table for storing the information about the terrain cards in the game
-CREATE TABLE terrain IF NOT EXISTS (
-    terrainid INT NOT NULL,
-    card_type VARCHAR(32),
-    energy_type VARCHAR(32),
-    PRIMARY KEY (terrainid),
-    FOREIGN KEY (card_type) REFERENCES card(card_type)
-    FOREIGN KEY (energy_type) REFERENCES energy(energy_type)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- Table for storing the information about the cards in a player's hand
-CREATE TABLE card_in_hand IF NOT EXISTS (
-    card_in_handid INT NOT NULL,
-    cardid INT NOT NULL,
     memberid INT NOT NULL,
     PRIMARY KEY (card_in_handid),
-    FOREIGN KEY (cardid) REFERENCES card(cardid),
+    FOREIGN KEY (card_in_handid) REFERENCES card(cardid),
     FOREIGN KEY (memberid) REFERENCES member(memberid)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- Table for storing the information about the cards in the discard stack
-CREATE TABLE card_in_discard IF NOT EXISTS (
-    card_in_discardid INT NOT NULL,
-    cardid INT NOT NULL,
-    memberid INT NOT NULL,
-    PRIMARY KEY (card_in_handid),
-    FOREIGN KEY (cardid) REFERENCES card(cardid),
-    FOREIGN KEY (memberid) REFERENCES member(memberid)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8
 
 -- Table for storing the information about the cards in the discard stack
 CREATE TABLE card_in_discard IF NOT EXISTS (
@@ -200,10 +148,10 @@ CREATE TABLE board IF NOT EXISTS (
     invocation1_slot INT CHECK(invocation1_slot != invocation2_slot AND invocation1_slot != invocation3_slot),
     invocation2_slot INT CHECK(invocation2_slot != invocation1_slot AND invocation2_slot != invocation3_slot),
     invocation3_slot INT CHECK(invocation3_slot != invocation1_slot AND invocation3_slot != invocation2_slot),
-    active_terrain_count INT,
-    spent_terrain_count INT,
+    active_terrain_count INT, -- Stores the active terrain currently in play
+    spent_terrain_count INT, -- Stores the terrain that has been used
     terrainid INT NOT NULL,
-    player_health INT,
+    player_health INT, -- Stores the health of each player
     AFKwarnings = 0 SMALLINT,
     PRIMARY KEY (boardid),
     FOREIGN KEY (gameid) REFERENCES game(gameid),
