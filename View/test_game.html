@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+</head>
+<body>
+<div id="deckType">
+
+</div>
+
+<!--Start socket.io script -->    
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  var socket = io();
+
+  var deck = "fire"
+  
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    if (input.value) {
+      socket.emit('select_deck', deck);
+      deck = '';
+    }
+  });
+
+  socket.on('select_deck', function(deck) {
+    var item = document.createElement('p');
+    item.textContent = deck;
+    deckType.appendChild(item);
+    
+  });
+</script>
+<!--End socket.io script -->
+</body>
+</html> 
