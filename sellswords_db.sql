@@ -32,12 +32,14 @@ CREATE TABLE member IF NOT EXISTS (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Table for storing the information about the results of a game
+-- Table for storing the information about the results of a game
 CREATE TABLE result IF NOT EXISTS (
     resultid INT NOT NULL,
     result_type BINARY, -- A 1 or 0 for a win or loss, respectively
     PRIMARY KEY (resultid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- Table for storing the information about the cards in the game
 -- Table for storing the information about the cards in the game
 CREATE TABLE card IF NOT EXISTS (
     cardid INT NOT NULL,
@@ -47,6 +49,7 @@ CREATE TABLE card IF NOT EXISTS (
     FOREIGN KEY (card_type) REFERENCES energy(energy_type)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- Table for storing the information about the energy types in the game
 -- Table for storing the information about the energy types in the game
 CREATE TABLE energy IF NOT EXISTS (
     energyid INT NOT NULL,
@@ -92,6 +95,54 @@ CREATE TABLE terrain IF NOT EXISTS (
 -- Table for storing the information about the cards in a player's hand
 CREATE TABLE card_in_hand IF NOT EXISTS (
     card_in_handid INT NOT NULL,
+-- Table for storing the information about the minion cards in the game
+CREATE TABLE minion IF NOT EXISTS (
+    minionid INT NOT NULL,
+    card_type VARCHAR(32),
+    energy_type VARCHAR(32),
+    summon_cost SMALLINT,
+    start_power SMALLINT,
+    atk_cost SMALLINT,
+    PRIMARY KEY (minionid),
+    FOREIGN KEY (card_type) REFERENCES card(card_type),
+    FOREIGN KEY (energy_type) REFERENCES energy(energy_type)
+)
+
+-- Table for storing the information about the invocation cards in the game
+CREATE TABLE spell IF NOT EXISTS (
+    spellid INT NOT NULL,
+    card_type VARCHAR(32),
+    energy_type VARCHAR(32),
+    fast_cost SMALLINT,
+    slow_time SMALLINT,
+    PRIMARY KEY (spellid),
+    FOREIGN KEY (card_type) REFERENCES card(card_type),
+    FOREIGN KEY (energy_type) REFERENCES energy(energy_type)
+)
+
+-- Table for storing the information about the terrain cards in the game
+CREATE TABLE terrain IF NOT EXISTS (
+    terrainid INT NOT NULL,
+    card_type VARCHAR(32),
+    energy_type VARCHAR(32),
+    PRIMARY KEY (terrainid),
+    FOREIGN KEY (card_type) REFERENCES card(card_type)
+    FOREIGN KEY (energy_type) REFERENCES energy(energy_type)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Table for storing the information about the cards in a player's hand
+CREATE TABLE card_in_hand IF NOT EXISTS (
+    card_in_handid INT NOT NULL,
+    cardid INT NOT NULL,
+    memberid INT NOT NULL,
+    PRIMARY KEY (card_in_handid),
+    FOREIGN KEY (cardid) REFERENCES card(cardid),
+    FOREIGN KEY (memberid) REFERENCES member(memberid)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Table for storing the information about the cards in the discard stack
+CREATE TABLE card_in_discard IF NOT EXISTS (
+    card_in_discardid INT NOT NULL,
     cardid INT NOT NULL,
     memberid INT NOT NULL,
     PRIMARY KEY (card_in_handid),
