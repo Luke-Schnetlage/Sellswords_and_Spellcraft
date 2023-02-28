@@ -7,15 +7,18 @@ const { Server } = require("socket.io");
 const io = new Server(server);
 
 app.get('/', (req, res) => {
+    console.log("debug #0");
     var root = {'root':path.dirname(__dirname)};
     res.sendFile('./View/test_game.html',root);
 });
 
 
 
-io.on('select_deck', (socket) => {
-    socket.on('select_deck', (deck) => {
-        io.emit('select_deck', deck);
+io.on('connection', (socket) => {
+    console.log("debug #2");
+    socket.on('select_deck_push', (deck) => {
+        console.log("debug #3");
+        io.emit('select_deck_pull', deck);
     });
 });
 

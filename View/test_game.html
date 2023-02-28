@@ -1,36 +1,45 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<title></title>
+  <title></title>
 </head>
+
 <body>
-<div id="deckType">
+  <form id="form" action="submit">
+    <input type="submit">
+  </form>
 
-</div>
+  <div id="deckType">
+    <p>This should say fire.</p>
+  </div>
 
-<!--Start socket.io script -->    
-<script src="/socket.io/socket.io.js"></script>
-<script>
-  var socket = io();
+  <!--Start socket.io script -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    var socket = io();
 
-  var deck = "fire"
-  
-
-  form.addEventListener('submit', function(e) {
-    e.preventDefault();
-    if (input.value) {
-      socket.emit('select_deck', deck);
-      deck = '';
-    }
-  });
-
-  socket.on('select_deck', function(deck) {
-    var item = document.createElement('p');
-    item.textContent = deck;
-    deckType.appendChild(item);
     
-  });
-</script>
-<!--End socket.io script -->
+
+    form.addEventListener('submit', function (e) {
+      var deck = "fire"
+      console.log("debug #1");
+      e.preventDefault();
+      
+      socket.emit('select_deck_push', deck);
+        
+      
+    });
+
+    socket.on('select_deck_pull', function (deck) {
+      console.log("debug #4");
+      var item = document.createElement('p');
+      item.textContent = deck;
+      document.getElementById("deckType").innerHTML = "<p>test</p>"
+
+    });
+  </script>
+  <!--End socket.io script -->
 </body>
-</html> 
+
+</html>
