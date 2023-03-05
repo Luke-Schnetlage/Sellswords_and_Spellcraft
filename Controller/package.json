@@ -2,17 +2,7 @@
     "name": "sellswords_and_spellcraft",
     "version": "0.0.1",
     "description": "interactive web-based card game",
-    "dependencies": {
-        "express": "^4.18.2",
-        "socket.io": "^4.6.1"
-
-    },
-
     "scripts": {
-        "start": "node test_player_action.js"
+        "start": "nodemon test_player_action.js"
     }
-
-    
 }
-
-
