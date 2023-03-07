@@ -1,21 +1,30 @@
 -- Table for storing the player information
 CREATE TABLE IF NOT EXISTS player (
+    playerid INT NOT NULL,
     username VARCHAR(30) NOT NULL,
     password VARCHAR(40) NOT NULL,
-    PRIMARY KEY (username),
+    PRIMARY KEY (playerid),
     UNIQUE (username)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Table for storing the information about the results of a game
+CREATE TABLE IF NOT EXISTS result (
+    resultid INT NOT NULL,
+    result_type BINARY, -- A 1 or 0 for a win or loss, respectively
+    PRIMARY KEY (resultid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Table for storing the game information
 CREATE TABLE IF NOT EXISTS game (
-    gameid INT NOT NULL PRIMARY KEY,
+    gameid INT,
     round_start TIMESTAMP NOT NULL, -- Store time at the beginning of the round
     round_end TIMESTAMP NOT NULL, -- Store end time at end of the round
-    max_players INT CHECK(max_players <= 2 AND max_players > 0), 
+    -- max_players INT CHECK(max_players <= 2 AND max_players > 0), 
     start_playerid INT NOT NULL, 
     result INT NOT NULL,
     move_timelimit INT NOT NULL,
-	FOREIGN KEY (start_playerid) REFERENCES player(username),
+    PRIMARY KEY (gameid),
+	FOREIGN KEY (start_playerid) REFERENCES player(playerid),
     FOREIGN KEY (result) REFERENCES result(resultid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -30,27 +39,21 @@ CREATE TABLE IF NOT EXISTS member (
     FOREIGN KEY (matchid) REFERENCES game(gameid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Table for storing the information about the results of a game
-CREATE TABLE IF NOT EXISTS result (
-    resultid INT NOT NULL,
-    result_type BINARY, -- A 1 or 0 for a win or loss, respectively
-    PRIMARY KEY (resultid)
+-- Table for storing the information about the energy types in the game
+CREATE TABLE IF NOT EXISTS energy (
+    energyid INT NOT NULL,
+    energy_type VARCHAR(32), -- Denotes energy types: void, fire, wind, water
+    PRIMARY KEY (energyid),
+    KEY (energy_type)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Table for storing the information about the cards in the game
 CREATE TABLE IF NOT EXISTS card (
     cardid INT NOT NULL,
     card_name VARCHAR(32), -- Actual names of each card
-    card_type VARCHAR(32), -- Denotes types of card: minion, invocation, terrain
+    card_type VARCHAR(32), -- Denotes card types: minion, invocation, terrain
     PRIMARY KEY (cardid),
-    FOREIGN KEY (card_type) REFERENCES energy(energy_type)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- Table for storing the information about the energy types in the game
-CREATE TABLE IF NOT EXISTS energy (
-    energyid INT NOT NULL,
-    energy_type VARCHAR(32), -- All energy types: void, fire, wind, water
-    PRIMARY KEY (energyid)
+    KEY (card_type)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Table for storing the information about the minion cards in the game
@@ -108,7 +111,7 @@ CREATE TABLE IF NOT EXISTS card_in_discard (
 
 -- Table for storing the information about the zone traits
 CREATE TABLE IF NOT EXISTS zone_traits (
-    zone_traitid INT NOT NULL,
+    zoneid INT NOT NULL,
     zone_type VARCHAR(32),
     PRIMARY KEY (zoneid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -152,7 +155,7 @@ CREATE TABLE IF NOT EXISTS player_board (
     spent_terrain_count INT, -- Stores the terrain that has been used
     terrainid INT NOT NULL,
     player_health INT, -- Stores the health of each player
-    AFKwarnings = 0 SMALLINT,
+    AFKwarnings SMALLINT,
     PRIMARY KEY (player_boardid),
     FOREIGN KEY (gameid) REFERENCES game(gameid),
     FOREIGN KEY (memberid) REFERENCES member(memberid),
@@ -160,7 +163,7 @@ CREATE TABLE IF NOT EXISTS player_board (
     FOREIGN KEY (card_in_discardid) REFERENCES card_in_discard(card_in_discardid),
     FOREIGN KEY (contested_zoneid) REFERENCES contested_zone(contested_zoneid),
     FOREIGN KEY (cardid) REFERENCES card(cardid),
-    FOREIGN KEY (terrainid) REFERENCES terrain(terrainid)
+    FOREIGN KEY (terrainid) REFERENCES terrain(terrainid),
     FOREIGN KEY (minion1_slot) REFERENCES minion(minionid),
     FOREIGN KEY (minion2_slot) REFERENCES minion(minionid),
     FOREIGN KEY (minion3_slot) REFERENCES minion(minionid),
